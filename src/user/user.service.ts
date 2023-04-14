@@ -4,11 +4,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import * as md5 from 'md5';
 
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
   create(createUserDto: any) {
+    createUserDto['password'] = md5(createUserDto['password']);
     return this.userRepo.save(createUserDto);
   }
 
@@ -26,5 +28,9 @@ export class UserService {
 
   remove(id: number) {
     return this.userRepo.delete(id);
+  }
+
+  findOneBy(options: any) {
+    return this.userRepo.findOne(options);
   }
 }
